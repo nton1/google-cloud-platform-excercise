@@ -1,0 +1,44 @@
+<button type="button" class="btn btn-default" ng-click="goToLaunchSimulation()">Torna indietro</button>
+<h2>Statistics</h2>
+
+
+<br/><br/>
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+	<tr>
+        <th>Numero differenti generati</th>
+		<th>Tempo di esecuzione</th>
+        <th>#</th>
+	</tr>
+	</thead>
+
+    <tbody>
+	<tr >
+        <td>{{statistiche.differentNumbers}}</td>
+		<td>{{statistiche.timeExecution}} secondi</td>
+
+	</tr>
+	</tbody>
+
+
+  </table>
+</div>
+
+<hr>
+<br/>
+<div class="row">
+	<h2>Tutti i singoli numeri estratti da 0 a 50 con relative percentuali</h2>
+	<br/>
+<canvas id="bar" class="chart chart-bar"
+  chart-data="data" chart-labels="labels"> chart-series="series"
+</canvas>
+</div>
+<div class="row">
+	<h2>Numeri estratti maggiormente con relative percentuali</h2>
+	<br/>
+<canvas id="bar2" class="chart chart-bar"
+  chart-data="data2" chart-labels="labels2"> chart-series="series2"
+</canvas>
+</div>
+

@@ -1,0 +1,52 @@
+<!doctype html>
+<html ng-app="App">
+  <head>
+    <link rel="stylesheet" href="/css/app.css">
+
+    <!--Jquery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!--Angular Framework-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular-route.js"></script>
+
+
+     <!--Bootstrap-->
+     <!-- Latest compiled and minified CSS -->
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+     <!-- Latest compiled and minified JavaScript -->
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!--Angular App source-->
+      <script src="/js/app.js"></script>
+       <!--Chart.js lib-->
+
+       <!--<script src="/js/Chart.js"></script>-->
+      <script src="node_modules/angular-chart.js/node_modules/chart.js/dist/Chart.min.js"></script>
+      <script src="node_modules/angular-chart.js/dist/angular-chart.min.js"></script>
+
+
+
+  </head>
+  <body>
+      <nav class="navbar navbar-default">
+        <img alt="Brand" src="/images/Google-Apps-Engine-logo.png">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <h1>Google app engine - first exercise</h1>
+          </div>
+        </div>
+      </nav>
+    <!--<h1>AngularJS Guest List</h1>
+    <pre class="status" ng-bind="status"></pre>-->
+      <div class="container">
+
+
+        <!--<div class="well">-->
+            <!--<p class="status" ng-bind="status">...</p>-->
+        <!--</div>-->
+
+        <div ng-view></div>
+      </div>
+  </body>
+</html>

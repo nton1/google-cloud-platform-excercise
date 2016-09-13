@@ -1,0 +1,37 @@
+<div class="well">
+            <p class="status" ng-bind="status">...</p>
+</div>
+<h2>Simulation</h2>
+<button type="button" class="btn btn-default"
+        ng-click="startSimulation()">Lancia simulazione</button>
+<button type="button" class="btn btn-default"
+        ng-click="deleteAllSimulations()">Elimina tutte le simulazioni</button>
+<!--<div ng-repeat="simulation in simulations">-->
+  <!--{{ $index + 1 }}. <b>{{ simulation.datetime }} </b>-->
+<!--</div>-->
+<br/><br/>
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+	<tr>
+        <th>Numero simulazione</th>
+		<th>ID simulazione</th>
+		<th>Data di esecuzione</th>
+		<th>Statistiche</th>
+        <th>#</th>
+	</tr>
+	</thead>
+
+    <tbody>
+	<tr ng-repeat="simulation in simulations">
+        <td>{{ $index + 1 }}. Simulazione</td>
+		<td>{{simulation.id}}</td>
+		<td>{{simulation.datetime}}</td>
+        <td><button type="button" class="btn btn-default" ng-click="goToStatistics({{simulation.id}})">Vedi statistiche simulazione</button></td>
+	</tr>
+	</tbody>
+
+  </table>
+</div>
+
+
