@@ -106,6 +106,19 @@ class QueryHandlerStatistics(RestHandler):
         self.SendJson(r)
 
 
+class LoginHandler(RestHandler):
+
+    def post(self):
+        r = json.loads(self.request.body)
+        user = r['email']
+        password = r['password']
+        if(user=='test@test.com' and password=='test'):
+            r = {'user':'revevol'}
+        else:
+            r = 'ko'
+        self.SendJson(r)
+
+
 
 class DeleteHandler(RestHandler):
 
@@ -120,5 +133,6 @@ APP = webapp2.WSGIApplication([
     ('/rest/start', StartSimulationHandler),
     ('/rest/deletenumbers', DeleteHandler),
     ('/rest/getstatistics', QueryHandlerStatistics),
+    ('/rest/login', LoginHandler),
     # ('/rest/update', UpdateHandler),
 ], debug=True)

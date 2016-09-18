@@ -1,6 +1,75 @@
 'use strict';
 
-var App = angular.module('App',['ngRoute',"chart.js"]);
+var App = angular.module('App',['ngRoute',"chart.js","angular-google-gapi"]);
+
+
+
+App.run(['GAuth', 'GApi', 'GData','$location', '$rootScope',
+    function(GAuth, GApi, GData, $location, $rootScope) {
+
+        $rootScope.$on('$routeChangeStart', function (event, next, current) {
+   GAuth.checkAuth().then(
+            function (user) {
+                console.log(user.name + 'is login')
+
+            },
+            function() {
+
+                 if($rootScope.userLoggedIn==='revevol'){
+                    console.log($rootScope.userLoggedIn + 'is logged in')
+
+                 }else{
+                     console.log('No user logged in')
+                     $location.path('/login');
+                 }
+
+            }
+        );
+  });
+
+        $rootScope.gdata = GData;
+
+        //var CLIENT = 'yourGoogleAuthAPIKey';
+        var CLIENT = '868258554719-th81m4ers5j7779tuc817rs37rqra6j7.apps.googleusercontent.com';
+        //var BASE = 'https://myGoogleAppEngine.appspot.com/_ah/api';
+        //var BASE = 'https://accounts.google.com/o/oauth2/auth';
+        var BASE = 'https://apis.google.com/js/platform.js';
+
+        GApi.load('myApiName','v1',BASE);
+        //GApi.load('calendar','v3'); // for google api (https://developers.google.com/apis-explorer/)
+
+        GAuth.setClient(CLIENT);
+        GAuth.setScope("https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email "); // default scope is only https://www.googleapis.com/auth/userinfo.email
+
+    // load the auth api so that it doesn't have to be loaded asynchronously
+    // when the user clicks the 'login' button.
+    // That would lead to popup blockers blocking the auth window
+    GAuth.load();
+
+    // or just call checkAuth, which in turn does load the oauth api.
+    // if you do that, GAuth.load(); is unnecessary
+        GAuth.checkAuth().then(
+            function (user) {
+                console.log(user.name + 'is login')
+                //$state.go('webapp.home');
+                $location.path('/');
+                // an example of action if it's possible to
+                              // authenticate user at startup of the application
+            },
+            function() {
+                console.log('No user logged in')
+                 if($rootScope.userLoggedIn==='revevol'){
+
+                 }else{
+                     $location.path('/login');
+                 }
+
+                //$state.go('login');       // an example of action if it's impossible to
+                      // authenticate user at startup of the application
+            }
+        );
+    }
+]);
 
 
 App.factory('myHttpInterceptor', function($rootScope, $q) {
@@ -30,8 +99,34 @@ App.factory('simulationService', function($rootScope, $http, $q, $log) {
 });
 
 
+App.factory('checkUserLoggedIn', function(GAuth,$location) {
+     GAuth.checkAuth().then(
+            function (user) {
+                console.log(user.name + 'is login')
+                //$state.go('webapp.home');
+                $location.path('/launchsimulation');
+
+            },
+            function() {
+                if($rootScope.userLoggedIn==='revevol'){
+                    console.log($rootScope.userLoggedIn + 'is logged in')
+                    $location.path('/launchsimulation');
+                 }else{
+                     console.log('No user logged in')
+                     $location.path('/login');
+                 }
+            }
+        );
+
+});
+
+
 
 App.config(function($routeProvider) {
+  $routeProvider.when('/login', {
+    controller : 'LoginCtrl',
+    templateUrl: '/partials/login.html'
+  });
   $routeProvider.when('/launchsimulation', {
     controller : 'LaunchSimulation',
     templateUrl: '/partials/main.html',
@@ -56,7 +151,7 @@ App.config(function($httpProvider) {
 });
 
 
-App.controller('LaunchSimulation', function($scope, $rootScope, $log, $http, $routeParams, $location, $route,$q,myService) {
+App.controller('LaunchSimulation', function($scope, $rootScope, $log, $http, $routeParams, $location, $route,$q,myService,GAuth) {
 
   $scope.startSimulation = function() {
 
@@ -115,6 +210,28 @@ console.log(id);
 
   };
 
+
+  $scope.doLogOut = function() {
+            GAuth.logout().then(function(){
+
+                $http.post('https://mail.google.com/mail/u/0/?logout&hl=en')
+  .success(function(data, status, headers, config) {
+   $location.path('/login');
+  });
+                //window.location = "https://mail.google.com/mail/u/0/?logout&hl=en";
+                //$location.path('/login');
+            }, function() {
+                console.log('logout failed');
+            });
+
+        if($rootScope.userLoggedIn==='revevol') {
+            $rootScope.userLoggedIn = '';
+            $rootScope.loginFailed = '';
+            $location.path('/login');
+        }
+
+      };
+
 });
 
 
@@ -137,7 +254,53 @@ App.factory('myService', function($rootScope, $http, $q, $log) {
 });
 
 
-App.controller('LoginCtrl', function($scope, $rootScope, $log, $http, $routeParams, $location, $route, statistiche) {
+App.controller('LoginCtrl', function($scope, $rootScope, $log, $http, $routeParams, $location, GAuth) {
+
+
+     $scope.doSingup = function() {
+            GAuth.login().then(function(user){
+
+                console.log(user.name + ' is login');
+                console.log(user);
+
+                GAuth.getToken().then(function (data) {
+                     var id_token = data.id_token;
+                      console.log("ID Token: " + id_token);
+                      $location.path('/');
+                 }, function () {
+                     console.log('token retrive failed ');
+                 });
+
+                //$state.go('webapp.home'); // action after the user have validated that
+                          // your application can access their Google account.
+            }, function() {
+                console.log('login fail');
+            });
+      };
+
+
+      $scope.loginUser = function(form) {
+          var url = form;
+          console.log(url);
+
+    $http.post('rest/login', { email: $scope.email, password: $scope.password })
+    .success(function(data, status, headers, config) {
+      $rootScope.userLoggedIn=data.user;
+        if($rootScope.userLoggedIn==='revevol'){
+            $rootScope.loginFailed="";
+         $location.path('/launchsimulation');
+        }else{
+            $rootScope.loginFailed="Login fallita, inserire email e password corretti";
+            $location.path('/login');
+        }
+    });
+    //$location.path('/statistics');
+  }
+
+
+
+
+
   $scope.goToPage = function () {
     $location.path('/launchsimulation');
   }
@@ -147,7 +310,7 @@ App.controller('LoginCtrl', function($scope, $rootScope, $log, $http, $routePara
 
 
 
-App.controller('StatisticsCtrl', function($scope, $rootScope, $log, $http, $routeParams, $location, $route,myService, datistatistiche) {
+App.controller('StatisticsCtrl', function($scope, $rootScope, $log, $http, $routeParams, $location, $route,myService, datistatistiche,GAuth) {
 
  //$scope.arrayPercentuale050=[];
  $scope.retrivedStatistics =  datistatistiche;
@@ -192,7 +355,26 @@ App.controller('StatisticsCtrl', function($scope, $rootScope, $log, $http, $rout
 
 
 
+$scope.doLogOut = function() {
+            GAuth.logout().then(function(){
 
+                $http.post('https://mail.google.com/mail/u/0/?logout&hl=en')
+  .success(function(data, status, headers, config) {
+   $location.path('/login');
+  });
+                //window.location = "https://mail.google.com/mail/u/0/?logout&hl=en";
+                //$location.path('/login');
+            }, function() {
+                console.log('logout failed');
+            });
+
+        if($rootScope.userLoggedIn==='revevol') {
+            $rootScope.userLoggedIn = '';
+            $rootScope.loginFailed = '';
+            $location.path('/login');
+        }
+
+      };
 
 
   $scope.goToLaunchSimulation = function () {
