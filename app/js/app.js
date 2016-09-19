@@ -148,10 +148,13 @@ App.config(function($routeProvider) {
 
 App.config(function($httpProvider) {
   $httpProvider.interceptors.push('myHttpInterceptor');
+
+    $httpProvider.defaults.useXDomain = true;
+        delete $httpProvider.defaults.headers.common['X-Requested-With'];
 });
 
 
-App.controller('LaunchSimulation', function($scope, $rootScope, $log, $http, $routeParams, $location, $route,$q,myService,GAuth) {
+App.controller('LaunchSimulation', function($scope, $rootScope, $log, $http, $routeParams, $location, $route,$q,myService,GAuth,$window) {
 
   $scope.startSimulation = function() {
 
@@ -212,12 +215,12 @@ console.log(id);
 
 
   $scope.doLogOut = function() {
-            GAuth.logout().then(function(){
 
-                $http.post('https://mail.google.com/mail/u/0/?logout&hl=en')
-  .success(function(data, status, headers, config) {
-   $location.path('/login');
-  });
+
+            GAuth.logout().then(function(){
+               // var data = data;
+                console.log('user is logged out');
+          $location.path('/login');
                 //window.location = "https://mail.google.com/mail/u/0/?logout&hl=en";
                 //$location.path('/login');
             }, function() {
@@ -265,6 +268,7 @@ App.controller('LoginCtrl', function($scope, $rootScope, $log, $http, $routePara
 
                 GAuth.getToken().then(function (data) {
                      var id_token = data.id_token;
+                    $rootScope.tokenID= id_token;
                       console.log("ID Token: " + id_token);
                       $location.path('/');
                  }, function () {
@@ -355,13 +359,16 @@ App.controller('StatisticsCtrl', function($scope, $rootScope, $log, $http, $rout
 
 
 
-$scope.doLogOut = function() {
-            GAuth.logout().then(function(){
 
-                $http.post('https://mail.google.com/mail/u/0/?logout&hl=en')
-  .success(function(data, status, headers, config) {
-   $location.path('/login');
-  });
+
+
+      $scope.doLogOut = function() {
+
+
+            GAuth.logout().then(function(){
+               // var data = data;
+                console.log('user is logged out');
+          $location.path('/login');
                 //window.location = "https://mail.google.com/mail/u/0/?logout&hl=en";
                 //$location.path('/login');
             }, function() {
@@ -375,7 +382,6 @@ $scope.doLogOut = function() {
         }
 
       };
-
 
   $scope.goToLaunchSimulation = function () {
     $location.path('/launchsimulation');
