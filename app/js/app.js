@@ -149,8 +149,6 @@ App.config(function($routeProvider) {
 App.config(function($httpProvider) {
   $httpProvider.interceptors.push('myHttpInterceptor');
 
-    $httpProvider.defaults.useXDomain = true;
-        delete $httpProvider.defaults.headers.common['X-Requested-With'];
 });
 
 
